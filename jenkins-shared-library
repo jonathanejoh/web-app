@@ -1,0 +1,36 @@
+//scripted pipeline
+node{
+ def MHD = tool name: "maven3.8.2"
+    stage('1.Initiation'){
+    sh "echo Start of td deployment"
+    }
+    stage('2.CloneCode'){
+    git branch: 'stage', credentialsId: 'GitHubCredentials', url: 'https://github.com/jonathanejoh/web-app'
+    }
+    stage('3.buildMaven'){
+    sh "${MHD}/bin/mvn package"
+    }
+    stage('4.CodeQuality'){
+    //sh "${MHD}/bin/mvn sonar:sonar"
+    }
+    stage('5.UploadArtifacts'){
+    //sh "${MHD}/bin/mvn deploy"
+    }
+   /* stage('6.Deploy2Stage'){
+   sshagent(['c8944eb5-d1e4-4974-ac9f-f932c6277a4a']) {
+}
+    sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@107.22.49.224:/opt/tomcat9/webapps"
+}*/
+    
+} 
+    stage('7.Approval'){
+    timeout(time:5, unit:'DAYS'){
+ 			input message: 'Approval for production'
+    
+    }
+   /* stage('8.deployToProd'){
+    sshagent(['c8944eb5-d1e4-4974-ac9f-f932c6277a4a']) {
+   sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@107.22.49.224:/opt/tomcat9/webapps/"
+}*/
+    
+    }
